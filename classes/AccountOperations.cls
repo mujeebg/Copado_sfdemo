@@ -14,4 +14,14 @@ public class AccountOperations {
     	a.Website = 'www.copa.do';//DEV2
     	return a;
 	}
+    
+     /**
+     * @description setDefaultPhone
+     * @return Account
+     */
+  public static Account setDefaultPhone(Account a) {//Dev01
+    	a.Phone = '9879879810';
+    	return a;
+	}
+
 }
