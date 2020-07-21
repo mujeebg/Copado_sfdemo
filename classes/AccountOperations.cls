@@ -1,20 +1,11 @@
-/**
- * @description AccountOperations
- */
 public class AccountOperations {
-    
-    /**
-     * @description setDefaultDescription
-     * @return Account
-    */
-  public static Account setDefaultDescription(Account a) {
-        a.Description = 'Default Description1';
+
+    public static Account setDefaultDescription(Account a){
+        a.Description = 'Default Description';
         return a;
     }
     
-
-
-    /**
+     /**
      * @description setDefaultPhone
      * @return Account
      */
@@ -22,7 +13,5 @@ public class AccountOperations {
     	a.Phone = '9879879810';
     	return a;
 	}
-
-
 
 }
