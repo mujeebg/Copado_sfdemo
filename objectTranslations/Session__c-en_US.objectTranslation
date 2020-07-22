@@ -9,12 +9,12 @@
         <value>Sessions</value>
     </caseValues>
     <fields>
-        <help><!-- sessionDate and time on which session takes place --></help>
-        <label><!-- sessionDate --></label>
+        <help></help>
+        <label></label>
         <name>sessionDate__c</name>
     </fields>
     <fields>
-        <label><!-- sessionDescription --></label>
+        <label></label>
         <name>sessionDescription__c</name>
     </fields>
     <startsWith>Consonant</startsWith>
