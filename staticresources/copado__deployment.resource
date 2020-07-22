@@ -2277,6 +2277,7 @@ var metadataGrid2, getMetadataGrid2 = function(type) {
 
                 console.info("MetadataGrid2:init done", metadataGrid2.allMetaData_cachedDate, metadataGrid2.filterByType);
                 rock.createCacheDeleteButton(metadataGrid2.allMetaData_cachedDate, metadataGrid2.filterByType);
+                rock.showGetVlocityDependenciesButton();
 
                 // listen to any change in the selection
                 document.addEventListener("copadoMetadataGrid2Changed", function(e) {
@@ -2287,6 +2288,7 @@ var metadataGrid2, getMetadataGrid2 = function(type) {
                 document.addEventListener("copadoMetadataGrid2TypeChanged", function(e) {
                     console.info("MetadataGrid2:type changed", metadataGrid2.allMetaData_cachedDate, metadataGrid2.filterByType);
                     rock.createCacheDeleteButton(metadataGrid2.allMetaData_cachedDate, metadataGrid2.filterByType);
+                    rock.showGetVlocityDependenciesButton();
                 });
 
             });
@@ -2393,7 +2395,7 @@ var copadoGrid = {
             var params = copadoGrid.getBasicParams();
             params.source = copadoGrid.makeSource(type, data);
             params.columns = copadoGrid.getColumnsByType(type);
-            
+
             console.time('Grid created time');
             copadoGrid.$currentGrid = $grid.jqxGrid(params);
             var countries = [],
@@ -2402,7 +2404,7 @@ var copadoGrid = {
                 console.debug('type==> ',type);
                 console.debug('types==> ',types);
                 console.debug('data==> ',data);
-            
+
             for(var i = 0; i < data.length; i++){
                 if(!countries.includes(data[i].c)){
                     countries.push(data[i].c);
@@ -2415,7 +2417,7 @@ var copadoGrid = {
                 copadoGrid.$currentGrid.jqxGrid('setcolumnproperty', 'p', 'filteritems',profiles);
                 copadoGrid.$currentGrid.jqxGrid('setcolumnproperty', 'c', 'filteritems',countries);
             }
-            
+
             if(type == 'Full Profiles'){
                 types.push('Profile');
             } else if(type == 'Full Permission Sets'){
@@ -2424,7 +2426,7 @@ var copadoGrid = {
             if(types.length > 0){
                 copadoGrid.$currentGrid.jqxGrid('setcolumnproperty', 't', 'filteritems',types);
             }
-            
+
             console.timeEnd('Grid created time');
         } catch (e) {
             console.error(e)
@@ -2722,6 +2724,7 @@ var copadoGrid = {
 
         }
         rock.createCacheDeleteButton(cachedDate);
+        rock.showGetVlocityDependenciesButton();
         copadoGrid.setOrgFilteredLink(copadoApp.orgFiltered, copadoStep.orgId);
         copadoGrid.startGrid(copadoStep.stepType, metaOrgData);
     },
@@ -2798,6 +2801,7 @@ var copadoGrid = {
             metadataGrid2.refreshCache(function(cachedDate) {
                 metadataGrid2.eltTabs.jqxTabs('select', 0);
                 rock.createCacheDeleteButton(cachedDate);
+                rock.showGetVlocityDependenciesButton();
             });
         } else {
             if (copadoStep.stepType == 'MetaData' || copadoStep.stepType == 'Delete MetaData') {
@@ -2917,6 +2921,7 @@ var copadoGitMetadataStep = {
             var e = me.data.metadata[len];
             e.s = e.s || false;
         }
+        
         //create datasource
         var source2 = {
             localdata: res,
@@ -2932,6 +2937,9 @@ var copadoGitMetadataStep = {
             }, {
                 name: 't',
                 type: 'string'
+            }, {
+                name: 'vk',
+                type: 'string'
             }],
             datatype: 'array',
             updaterow: function(rowid, rowdata, commit) {
@@ -2940,7 +2948,7 @@ var copadoGitMetadataStep = {
                 copadoStep.dirty = true;
             }
         };
-
+        
         //adapter wrapper
         dataAdapter2 = new $copado.jqx.dataAdapter(source2);
 
@@ -3071,10 +3079,9 @@ var copadoGitMetadataStep = {
 
             //remote
             var uri = rock.config.git_metadata_url
-                .replace('{branch}', encodeURIComponent(me.data.branch))
+                .replace('{branch}', me.data.branch)
                 .replace('{repositoryId}', me.data.repositoryId)
                 .replace('{commitId}', me.data.commitId);
-
             statusManager.parentId = me.data.repositoryId;
             statusManager.startProcess(function() {
                 utilsV2.onSuccessCB = function(res) {
@@ -3305,7 +3312,7 @@ var usersStep = {
 // *********************************
 //namespace
 var rock = rock || {};
-
+rock.showVlocityButton;
 rock.stepType = copadoStep.stepType;
 rock.stepId = copadoStep.stepId;
 
@@ -3345,6 +3352,12 @@ rock.removeCached = function() {
     return false;
 };
 
+rock.showGetVlocityDependenciesButton = function() {
+
+    console.log('rock.showVlocityButton: ', rock.showVlocityButton);
+    if(rock.showVlocityButton == 'true')$copado('[id$=vlocityMetadata]').show();
+}
+
 rock.getSelectedObj = function() {
     var data = rock.datasource.localdata,
         len = data.length;
@@ -3355,6 +3368,7 @@ rock.getSelectedObj = function() {
         data[len].s && rock.selectedNames.push({
             t: data[len].t,
             n: data[len].n,
+            vk: data[len].vk,
             s: true
         });
     }
@@ -4619,7 +4633,6 @@ var copadoGitPromotionStep = {
             me.data.metadata = [];
             return;
         }
-        var charCheckArray = ['/', '-', '='];
 
         //set data  -- updated second line to be able to show whole url near branch label - UCU 24.05.18
         me.setData2(
@@ -4628,7 +4641,7 @@ var copadoGitPromotionStep = {
             me.stepObj[ns + 'Commit_Id__c'],
             me.stepObj[ns + 'Git_Repository__c'],
             me.stepObj[ns + 'Commit_Name__c'],
-            me.stepObj[ns + 'Git_Repository__r'] ? (me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'] ? (charCheckArray.includes(me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'].slice(me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'].length - 1, me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'].length)) ? me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'] + me.stepObj[ns + 'Branch__c'] : me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'] + '/' + me.stepObj[ns + 'Branch__c']) : me.stepObj[ns + 'Branch__c']) : ''
+            me.stepObj[ns + 'Git_Repository__r'] ? (me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'] ? me.stepObj[ns + 'Git_Repository__r'][ns + 'Branch_Base_URL__c'] + me.stepObj[ns + 'Branch__c'] : me.stepObj[ns + 'Branch__c']) : ''
         );
 
         //check or ask for metadata
@@ -4654,6 +4667,7 @@ var copadoGitPromotionStep = {
             var e = me.data.metadata[len];
             e.s = e.s || false;
         }
+        
         //create datasource
         var source2 = {
             localdata: res,
@@ -4830,11 +4844,9 @@ var copadoGitPromotionStep = {
 
             //remote
             var uri = rock.config.git_metadata_url
-                .replace('{branch}', encodeURIComponent(me.data.branch))
+                .replace('{branch}', me.data.branch)
                 .replace('{repositoryId}', me.data.repositoryId)
                 .replace('{commitId}', me.data.commitId);
-
-
             statusManager.parentId = me.data.repositoryId;
             statusManager.startProcess(function() {
                 utilsV2.onSuccessCB = function(res) {
@@ -5499,19 +5511,21 @@ dw.qb.testQuery = function(e) {
         return false;
     }
     var idCount = queryFields.match(/\b(id)\b/gim);
-    if (!idCount) {
+    var attachmentOptionsValue = dw.qb.ui.attachmentOptions.val();
+    var matchOwnerFieldVal = dw.qb.ui.matchOwner.prop('checked');
+    var recordTypeFieldVal = dw.qb.ui.matchRecordType.prop('checked');
+    
+    if (!idCount && (matchOwnerFieldVal || recordTypeFieldVal || (attachmentOptionsValue && attachmentOptionsValue != "none"))) {
         copadoApp.showMessage('ERROR', copadoLabels.SOQL_HASNOT_ID_ERROR);
         return false;
     }
 
-    var matchOwnerFieldVal = dw.qb.ui.matchOwner.prop('checked');
     //check query has ownerId
     if (matchOwnerFieldVal && queryFields.indexOf('OwnerId') === -1) {
         copadoApp.showMessage('ERROR', copadoLabels.MATCH_OWNER_WARNING);
         return false;
     }
 
-    var recordTypeFieldVal = dw.qb.ui.matchRecordType.prop('checked');
     //check query has ownerId
     if (recordTypeFieldVal && queryFields.indexOf('RecordTypeId') === -1) {
         copadoApp.showMessage('ERROR', copadoLabels.MATCH_RECORD_TYPE_WARNING);
