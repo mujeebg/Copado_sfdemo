@@ -1,6 +1,13 @@
 @isTest
+/**
+ * @description AccountOperationsTest
+ */
 public class AccountOperationsTest {
 
+    /**
+     * @description testDefaultHasDefaultDescription
+     * @return nothing
+     */
     @isTest static void  testDefaultHasDefaultDescription(){
     //perform test
     Test.startTest();
@@ -9,6 +16,6 @@ public class AccountOperationsTest {
     Test.stopTest();
     //verify
     Account savedAcc = [SELECT Description FROM Account WHERE  Id = :result.getId()];
-    System.assertEquals('Default Description1', savedAcc.Description);
+    System.assertEquals('Default Description added', savedAcc.Description);
     }
 }
