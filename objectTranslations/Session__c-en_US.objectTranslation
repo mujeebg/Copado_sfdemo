@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Session</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Sessions</value>
+    </caseValues>
+    <fields>
+        <help><!-- sessionDate and time on which session takes place --></help>
+        <label><!-- sessionDate --></label>
+        <name>sessionDate__c</name>
+    </fields>
+    <fields>
+        <label><!-- sessionDescription --></label>
+        <name>sessionDescription__c</name>
+    </fields>
+    <startsWith>Consonant</startsWith>
+</CustomObjectTranslation>
