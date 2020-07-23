@@ -9,6 +9,13 @@ public class AccountOperations {
             a.Phone = '9963424242';
             return a;
         }
+        //end of def phone number method
 
 
-}//end of def phone number method
+   //this is tsecnd method in dev02 
+    public static Account setDefaultURL(Account a) {//DEV2
+        a.Website = 'https://success.copado.com';//DEV2
+        return a;
+    }
+
+}
