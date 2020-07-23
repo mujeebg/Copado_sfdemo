@@ -6,9 +6,9 @@ public class AccountOperations {
 
 // Added the Default phone number method    
     public static Account setDefaultPhone(Account a) {//Dev01
-            a.Phone = '9963414141';
+            a.Phone = '9963424242';
             return a;
         }
 
 
-}
+}//end of def phone number method
